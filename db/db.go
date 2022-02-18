@@ -3,23 +3,15 @@ package db
 import (
 	"context"
 	"log"
+	"teste-golang/types"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type People struct {
-	ID     string `json:"_id" bson:"_id"`
-	Name   string
-	Heigth int
-	Weigth int
-	IMC    float64
-	Gender string
-}
-
-func OpenDatabase(uri string) (*mongo.Collection, error) {
-
+func OpenDatabase(uri string) (*mongo.Client, error) {
 	if uri == "" {
 		log.Fatal("You must set an URI enviroment variable")
 	}
@@ -27,21 +19,33 @@ func OpenDatabase(uri string) (*mongo.Collection, error) {
 	defer cancel()
 
 	m, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	return m, err
+
+}
+
+func GetCollection(uri string) (*mongo.Collection, error) {
+	client, err := OpenDatabase(uri)
 	if err != nil {
 		return nil, err
 	}
 
-	defer func() {
-		if err := m.Disconnect(ctx); err != nil {
-			panic(err)
-		}
-
-	}()
-
-	log.Println("Database Running")
-
-	collection := m.Database("People_database").Collection("People")
+	collection := client.Database("People_database").Collection("People")
 
 	return collection, nil
+}
 
+func InsertInCollection(uri string, people types.People) error {
+	collection, err := GetCollection(uri)
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10+time.Second)
+	defer cancel()
+
+	result, err := collection.InsertOne(ctx, people)
+
+	spew.Dump(result)
+
+	return err
 }

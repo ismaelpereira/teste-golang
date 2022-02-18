@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"teste-golang/db"
@@ -20,11 +21,12 @@ func run() error {
 		log.Println("No .env file found")
 	}
 	uri := os.Getenv("MONGODB_URI")
-	collection, err := db.OpenDatabase(uri)
+	fmt.Println(uri)
+	client, err := db.OpenDatabase(uri)
 	if err != nil {
 		return err
 	}
 
-	spew.Dump(collection)
+	spew.Dump(client)
 	return nil
 }
