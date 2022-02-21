@@ -1,11 +1,10 @@
 package db
 
 import (
-	"context"
 	"fmt"
 	"log"
+	"teste-golang/common"
 	"teste-golang/types"
-	"time"
 
 	"github.com/davecgh/go-spew/spew"
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,9 +17,8 @@ func OpenDatabase(uri string) (*mongo.Client, error) {
 	if uri == "" {
 		log.Fatal("You must set an URI enviroment variable")
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10+time.Second)
+	ctx, cancel := common.Context()
 	defer cancel()
-
 	m, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 
 	return m, err
@@ -44,19 +42,19 @@ func FindOneInCollection(uri string, ID primitive.ObjectID) (primitive.M, error)
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10+time.Second)
+	ctx, cancel := common.Context()
 	defer cancel()
 
 	collection := client.Database("People_database").Collection("People")
 
-	var people bson.M
+	var person bson.M
 
-	err = collection.FindOne(ctx, bson.D{{"_id", ID}}).Decode(&people)
+	err = collection.FindOne(ctx, bson.D{{"_id", ID}}).Decode(&person)
 
 	if err != nil {
 		return nil, err
 	}
-	return people, nil
+	return person, nil
 }
 
 func CheckIfNameExists(uri string, name string) (bool, error) {
@@ -65,37 +63,37 @@ func CheckIfNameExists(uri string, name string) (bool, error) {
 		return true, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10+time.Second)
+	ctx, cancel := common.Context()
 	defer cancel()
 
 	collection := client.Database("People_database").Collection("People")
 
-	var people bson.M
+	var person bson.M
 
-	err = collection.FindOne(ctx, bson.D{{"name", name}}).Decode(&people)
+	err = collection.FindOne(ctx, bson.D{{"name", name}}).Decode(&person)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return false, nil
 		}
 		return true, err
 	}
-	if people != nil {
+	if person != nil {
 		return true, err
 	}
 
 	return false, nil
 }
 
-func InsertInCollection(uri string, people types.People) error {
+func InsertInCollection(uri string, person types.Person) error {
 	collection, err := FindCollection(uri)
 	if err != nil {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10+time.Second)
+	ctx, cancel := common.Context()
 	defer cancel()
 
-	exists, err := CheckIfNameExists(uri, people.Name)
+	exists, err := CheckIfNameExists(uri, person.Name)
 	if err != nil {
 		return err
 	}
@@ -103,7 +101,7 @@ func InsertInCollection(uri string, people types.People) error {
 		return fmt.Errorf("ERROR! Name already exists")
 	}
 
-	result, err := collection.InsertOne(ctx, people)
+	result, err := collection.InsertOne(ctx, person)
 	if err != nil {
 		return err
 	}
@@ -113,20 +111,20 @@ func InsertInCollection(uri string, people types.People) error {
 	return err
 }
 
-func UpdatePeople(uri string, id primitive.ObjectID, people types.People) error {
+func UpdatePeople(uri string, id primitive.ObjectID, person types.Person) error {
 	collection, err := FindCollection(uri)
 	if err != nil {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10+time.Second)
+	ctx, cancel := common.Context()
 	defer cancel()
 
-	filter := bson.D{{"_id", people.ID}}
+	filter := bson.D{{"_id", person.ID}}
 
 	spew.Dump(filter)
 
-	result, err := collection.UpdateOne(ctx, filter, bson.D{{Key: "$set", Value: people}})
+	result, err := collection.UpdateOne(ctx, filter, bson.D{{Key: "$set", Value: person}})
 	if err != nil {
 		return err
 	}
@@ -141,7 +139,7 @@ func DeletePeople(uri string, id primitive.ObjectID) error {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10+time.Second)
+	ctx, cancel := common.Context()
 	defer cancel()
 
 	result, err := collection.DeleteOne(ctx, bson.D{{"_id", id}})
