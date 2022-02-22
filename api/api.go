@@ -19,8 +19,8 @@ func StartAPI() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/", GetPeople)
-	e.POST("/people", CreatePerson)
+	e.GET("/person", GetPeople)
+	e.POST("/person", CreatePerson)
 	e.GET("/person/:id", GetPerson)
 	e.PUT("/person/:id", UpdatePerson)
 	e.DELETE("/person/:id", DeletePerson)
@@ -61,7 +61,6 @@ func GetPerson(c echo.Context) error {
 	idParam := c.Param("id")
 
 	uri, err := common.LoadUri("../local.env")
-	fmt.Println(uri)
 	if err != nil {
 		return err
 	}
@@ -80,13 +79,64 @@ func GetPerson(c echo.Context) error {
 }
 
 func CreatePerson(c echo.Context) error {
-	return nil
+	p := new(types.Person)
+
+	if err := c.Bind(p); err != nil {
+		return err
+	}
+	p.ID = primitive.NewObjectID()
+	p.IMC = float64(p.Weight) / ((float64(p.Height) / 100) * (float64(p.Height) / 100))
+
+	uri, err := common.LoadUri("../local.env")
+	if err != nil {
+		return err
+	}
+	if err := db.InsertInCollection(uri, *p); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusCreated, p)
 }
 
 func UpdatePerson(c echo.Context) error {
-	return nil
+	idParam := c.Param("id")
+	id, err := primitive.ObjectIDFromHex(idParam)
+
+	p := new(types.Person)
+	if err := c.Bind(p); err != nil {
+		return err
+	}
+	p.ID = id
+	p.IMC = float64(p.Weight) / ((float64(p.Height) / 100) * (float64(p.Height) / 100))
+
+	if err != nil {
+		return err
+	}
+	uri, err := common.LoadUri("../local.env")
+	if err != nil {
+		return err
+	}
+	if err := db.UpdatePeople(uri, id, *p); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, p)
 }
 
 func DeletePerson(c echo.Context) error {
-	return nil
+	idParam := c.Param("id")
+	id, err := primitive.ObjectIDFromHex(idParam)
+	if err != nil {
+		return err
+	}
+	uri, err := common.LoadUri("../local.env")
+	if err != nil {
+		return err
+	}
+	err = db.DeletePeople(uri, id)
+	if err != nil {
+		return err
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }

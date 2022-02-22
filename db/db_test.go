@@ -46,8 +46,8 @@ func TestInsertion(t *testing.T) {
 		t.Error("Fail to load uri")
 	}
 
-	var person = types.Person{ID: primitive.NewObjectID(), Name: "Jhon Does", Heigth: 190, Weigth: 85, Gender: "Male"}
-	person.IMC = float64(person.Weigth) / ((float64(person.Heigth) / 100) * (float64(person.Heigth) / 100))
+	var person = types.Person{ID: primitive.NewObjectID(), Name: "Jhon Does", Height: 190, Weight: 85, Gender: "Male"}
+	person.IMC = float64(person.Weight) / ((float64(person.Height) / 100) * (float64(person.Height) / 100))
 
 	if err := InsertInCollection(uri, person); err != nil {
 		t.Error("Cannot insert data", err)
@@ -64,7 +64,7 @@ func TestUpdate(t *testing.T) {
 		t.Error("Fail to load uri")
 	}
 
-	var person = types.Person{ID: id, Name: "Fernanda", Heigth: 155, Weigth: 45, Gender: "Female", IMC: (45 / (155 / 10) * (155 / 10))}
+	var person = types.Person{ID: id, Name: "Fernanda", Height: 155, Weight: 45, Gender: "Female", IMC: (45 / (155 / 10) * (155 / 10))}
 
 	err = UpdatePeople(uri, id, person)
 	if err != nil {
