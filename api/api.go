@@ -31,7 +31,7 @@ func StartAPI() {
 }
 
 func getPeople(c echo.Context) error {
-	uri, err := common.LoadUri("../local.env")
+	uri, err := common.LoadUri("./local.env")
 	fmt.Println(uri)
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ func getPeople(c echo.Context) error {
 func getPerson(c echo.Context) error {
 	idParam := c.Param("id")
 
-	uri, err := common.LoadUri("../local.env")
+	uri, err := common.LoadUri("./local.env")
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func createPerson(c echo.Context) error {
 	p.ID = primitive.NewObjectID()
 	p.IMC = float64(p.Weight) / ((float64(p.Height) / 100) * (float64(p.Height) / 100))
 
-	uri, err := common.LoadUri("../local.env")
+	uri, err := common.LoadUri("./local.env")
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func createPerson(c echo.Context) error {
 		return err
 	}
 
-	message := "Cadastro de pessoa" + p.ID.String() + ":" + p.Name
+	message := "Cadastro de pessoa " + p.ID.String() + ":" + p.Name
 	if err := rabbit.SendMessage(message); err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func updatePerson(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	uri, err := common.LoadUri("../local.env")
+	uri, err := common.LoadUri("./local.env")
 	if err != nil {
 		return err
 	}
@@ -126,7 +126,7 @@ func updatePerson(c echo.Context) error {
 		return err
 	}
 
-	message := "Edição da pessoa" + p.ID.String() + ":" + p.Name
+	message := "Edição da pessoa " + p.ID.String() + ":" + p.Name
 	if err := rabbit.SendMessage(message); err != nil {
 		return err
 	}
@@ -140,7 +140,7 @@ func deletePerson(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	uri, err := common.LoadUri("../local.env")
+	uri, err := common.LoadUri("./local.env")
 	if err != nil {
 		return err
 	}
@@ -149,7 +149,7 @@ func deletePerson(c echo.Context) error {
 		return err
 	}
 
-	message := "Exclusão da pessoa" + idParam
+	message := "Exclusão da pessoa " + idParam
 	if err := rabbit.SendMessage(message); err != nil {
 		return err
 	}

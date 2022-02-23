@@ -1,5 +1,5 @@
 build: clean
-		go build -v -o dist/bin/crud-people -ldflags="-s -w" main.go
+		go build -o /crud-people 
 		
 
 run: build

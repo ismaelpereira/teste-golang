@@ -2,7 +2,7 @@ FROM golang:1.17
 
 ENV GO111MODULE on
 
-WORKDIR /home/src/github.com/ismaelpereira/golang-test
+WORKDIR /home/src/github.com/ismaelpereira/golang-test/
 
 COPY go.mod .
 COPY go.sum .
@@ -18,4 +18,7 @@ RUN make build
 
 RUN echo $PATH
 
-CMD ["crud-people"]
+
+RUN ls 
+
+ENTRYPOINT ["/crud-people"]

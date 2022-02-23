@@ -7,7 +7,7 @@ import (
 )
 
 func SendMessage(message string) error {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5673/")
+	conn, err := amqp.Dial("amqp://user:password@rabbitmq/")
 
 	if err != nil {
 		return fmt.Errorf("Failed to connect to RabbitMQ %v", err)
