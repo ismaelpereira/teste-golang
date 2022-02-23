@@ -10,13 +10,13 @@ func SendMessage(message string) error {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5673/")
 
 	if err != nil {
-		return fmt.Errorf("Failed to connect to RabbitMQ", err)
+		return fmt.Errorf("Failed to connect to RabbitMQ %v", err)
 	}
 	defer conn.Close()
 
 	ch, err := conn.Channel()
 	if err != nil {
-		return fmt.Errorf("Failed to open a channel", err)
+		return fmt.Errorf("Failed to open a channel %v", err)
 	}
 
 	defer ch.Close()
@@ -30,7 +30,7 @@ func SendMessage(message string) error {
 		nil,
 	)
 	if err != nil {
-		return fmt.Errorf("Failed to declare queue", err)
+		return fmt.Errorf("Failed to declare queue %v", err)
 	}
 
 	body := message
@@ -46,7 +46,7 @@ func SendMessage(message string) error {
 		})
 
 	if err != nil {
-		return fmt.Errorf("Failed to publish a message", err)
+		return fmt.Errorf("Failed to publish a message %v", err)
 	}
 
 	return nil
