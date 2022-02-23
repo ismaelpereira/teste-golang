@@ -13,5 +13,4 @@ Contudo, será preciso gerar uma URI no mongoDB Cluster e inserir num arquivo lo
 
 ```
 MONGODB_URI = <URI>
-
 ```
