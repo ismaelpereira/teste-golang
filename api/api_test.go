@@ -17,7 +17,7 @@ func TestGetAllPeople(t *testing.T) {
 
 	c := e.NewContext(request, response)
 	c.SetPath("/person")
-	err := GetPeople(c)
+	err := getPeople(c)
 
 	if err != nil {
 		t.Error("Cannot get All people", err)
@@ -37,7 +37,7 @@ func TestGetOnePeople(t *testing.T) {
 	c.SetParamNames("id")
 	c.SetParamValues("6213a3d85dc37493c3575a8a")
 
-	err := GetPerson(c)
+	err := getPerson(c)
 
 	if err != nil {
 		t.Error("Cannot get this person", err)
@@ -47,7 +47,7 @@ func TestGetOnePeople(t *testing.T) {
 }
 
 func TestCreatePeople(t *testing.T) {
-	userJSON := `{"name": "Joe Smith", "height": 195, "weight": 100, "gender": "male"}`
+	userJSON := `{"name": "Joe Smithness", "height": 195, "weight": 100, "gender": "male"}`
 
 	e := echo.New()
 	request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(userJSON))
@@ -58,7 +58,7 @@ func TestCreatePeople(t *testing.T) {
 
 	c.SetPath("/person")
 
-	err := CreatePerson(c)
+	err := createPerson(c)
 	if err != nil {
 		t.Error("Cannot create this person", err)
 	}
@@ -79,7 +79,7 @@ func TestUpdatePeople(t *testing.T) {
 	c.SetParamNames("id")
 	c.SetParamValues("6214faf96ad25eff1982b180")
 
-	err := UpdatePerson(c)
+	err := updatePerson(c)
 	if err != nil {
 		t.Error("Cannot update this person", err)
 	}
@@ -98,7 +98,7 @@ func TestDeletePeople(t *testing.T) {
 	c.SetParamNames("id")
 	c.SetParamValues("6214faf96ad25eff1982b180")
 
-	err := DeletePerson(c)
+	err := deletePerson(c)
 	if err != nil {
 		t.Error("Cannot delete this person", err)
 	}

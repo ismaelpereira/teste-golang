@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"teste-golang/common"
 	"teste-golang/db"
+	"teste-golang/rabbit"
 	"teste-golang/types"
 
 	"github.com/labstack/echo/v4"
@@ -19,17 +20,17 @@ func StartAPI() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/person", GetPeople)
-	e.POST("/person", CreatePerson)
-	e.GET("/person/:id", GetPerson)
-	e.PUT("/person/:id", UpdatePerson)
-	e.DELETE("/person/:id", DeletePerson)
+	e.GET("/person", getPeople)
+	e.POST("/person", createPerson)
+	e.GET("/person/:id", getPerson)
+	e.PUT("/person/:id", updatePerson)
+	e.DELETE("/person/:id", deletePerson)
 
 	e.Logger.Fatal(e.Start(":1323"))
 
 }
 
-func GetPeople(c echo.Context) error {
+func getPeople(c echo.Context) error {
 	uri, err := common.LoadUri("../local.env")
 	fmt.Println(uri)
 	if err != nil {
@@ -57,7 +58,7 @@ func GetPeople(c echo.Context) error {
 	return c.JSON(http.StatusOK, peoples)
 }
 
-func GetPerson(c echo.Context) error {
+func getPerson(c echo.Context) error {
 	idParam := c.Param("id")
 
 	uri, err := common.LoadUri("../local.env")
@@ -78,7 +79,7 @@ func GetPerson(c echo.Context) error {
 	return c.JSON(http.StatusOK, people)
 }
 
-func CreatePerson(c echo.Context) error {
+func createPerson(c echo.Context) error {
 	p := new(types.Person)
 
 	if err := c.Bind(p); err != nil {
@@ -95,10 +96,15 @@ func CreatePerson(c echo.Context) error {
 		return err
 	}
 
+	message := "Cadastro de pessoa" + p.ID.String() + ":" + p.Name
+	if err := rabbit.SendMessage(message); err != nil {
+		return err
+	}
+
 	return c.JSON(http.StatusCreated, p)
 }
 
-func UpdatePerson(c echo.Context) error {
+func updatePerson(c echo.Context) error {
 	idParam := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idParam)
 
@@ -120,10 +126,15 @@ func UpdatePerson(c echo.Context) error {
 		return err
 	}
 
+	message := "Edição da pessoa" + p.ID.String() + ":" + p.Name
+	if err := rabbit.SendMessage(message); err != nil {
+		return err
+	}
+
 	return c.JSON(http.StatusOK, p)
 }
 
-func DeletePerson(c echo.Context) error {
+func deletePerson(c echo.Context) error {
 	idParam := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idParam)
 	if err != nil {
@@ -135,6 +146,11 @@ func DeletePerson(c echo.Context) error {
 	}
 	err = db.DeletePeople(uri, id)
 	if err != nil {
+		return err
+	}
+
+	message := "Exclusão da pessoa" + idParam
+	if err := rabbit.SendMessage(message); err != nil {
 		return err
 	}
 

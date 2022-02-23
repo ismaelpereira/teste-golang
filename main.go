@@ -13,6 +13,5 @@ func main() {
 
 func run() error {
 	api.StartAPI()
-
 	return nil
 }

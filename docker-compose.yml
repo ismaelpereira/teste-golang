@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+    rabbitmq:
+      image: rabbitmq:3.8.9-management-alpine
+      container_name: 'rabbitmq'
+      ports: 
+        - 5673:5673
+        - 15673:15673
+      volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+      networks:
+        - rabbitmq_go_net
+      restart: unless-stopped
+      
+
+
+networks:
+  rabbitmq_go_net:
+    driver: bridge

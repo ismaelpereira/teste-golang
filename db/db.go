@@ -124,6 +124,15 @@ func UpdatePeople(uri string, id primitive.ObjectID, person types.Person) error 
 
 	spew.Dump(filter)
 
+	nameExists, err := CheckIfNameExists(uri, person.Name)
+	if err != nil {
+		return err
+	}
+
+	if nameExists {
+		return fmt.Errorf("Cannot update people, name already exists")
+	}
+
 	result, err := collection.UpdateOne(ctx, filter, bson.D{{Key: "$set", Value: person}})
 	if err != nil {
 		return err
