@@ -5,7 +5,7 @@ O teste consiste em um serviço em Golang que implemente uma API Restful para co
 
 Essa aplicação foi construída em Go utilizando testes unitários e será criado um Dockerfile para que fique disponibilizada em um container Docker.
 
-
-TODO: 
-
--Implementação RabbitMQ 
+Para rodar a aplicação, basta rodar o comando
+```
+docker-compose up
+```
