@@ -9,3 +9,9 @@ Para rodar a aplicação, basta rodar o comando
 ```
 docker-compose up
 ```
+Contudo, será preciso gerar uma URI no mongoDB Cluster e inserir num arquivo local.env com o código
+
+```
+MONGODB_URI = <URI>
+
+```
