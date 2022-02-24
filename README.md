@@ -14,3 +14,4 @@ Contudo, será preciso gerar uma URI no mongoDB Cluster e inserir num arquivo lo
 ```
 MONGODB_URI = <URI>
 ```
+Também foi criado um serviço, já adicionado no docker-compose, chamado Listener, que sua função é consumir os eventos gerados pela fila do RabbitMQ e logar os mesmos
