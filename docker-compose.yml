@@ -20,9 +20,8 @@ services:
       restart: unless-stopped
     
     listener:
-      build: 
-        context: ./
-        dockerfile: Dockerfile-listener
+      build:
+        context: /home/ismaelpereira/src/github.com/ismaelpereira/rabbitmq-listener
       restart: unless-stopped
    
 
